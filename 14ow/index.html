@@ -1,0 +1,70 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
+<head><title>
+
+ain't nobody got time for that
+
+</title>
+<style type="text/css">
+  p {font: 12pt courier}
+.foo a {font-family:courier; color:silver}	
+.foo a:link {color:grey;text-decoration:none;}
+.foo a:visited {color:silver;}
+.foo a:hover {text-decoration:none;color:gainsboro;font-weight:bold;}
+.foo a:active {color:black;text-decoration: none}
+</style>
+</head>
+<body>
+        <script src="http://ajax.googleapis.com/ajax/libs/jquery/2.0.2/jquery.min.js" type="text/javascript"></script>
+		<script type="text/javascript">
+
+var isSafari = /Safari/.test(navigator.userAgent) && /Apple Computer/.test(navigator.vendor);
+if (isSafari) alert("SAFARI no sync ggif yet.. send fix --> sync@ggif.co .. try CHROME FIREFOX OPERA ANDROID now to sync GGIF");
+
+
+var html5_audiotypes={ //define list of audio file extensions and their associated audio types. Add to it if your specified audio file isn't on this list:
+	"mp3": "audio/mpeg",
+	"mp4": "audio/mp4",
+	"ogg": "audio/ogg",
+	"wav": "audio/wav"
+}
+
+function createsoundbite(sound){
+	var html5audio=document.createElement('audio')
+	if (html5audio.canPlayType){ //check support for HTML5 audio
+		for (var i=0; i<arguments.length; i++){
+			var sourceel=document.createElement('source')
+			sourceel.setAttribute('src', arguments[i])
+			if (arguments[i].match(/\.(\w+)$/i))
+				sourceel.setAttribute('type', html5_audiotypes[RegExp.$1])
+			html5audio.appendChild(sourceel)
+		}
+		html5audio.load()
+		html5audio.playclip=function(){
+			html5audio.pause()
+			html5audio.currentTime=0
+			html5audio.play()
+		}
+		return html5audio
+	}
+	else{
+		return {playclip:function(){throw new Error("Your browser doesn't support HTML5 audio unfortunately")}}
+	}
+}
+
+	//Initialize two sound clips with 1 fallback file each:
+
+var mouseoversound=createsoundbite("14ow.ogg", "14ow.mp3")
+var clicksound=createsoundbite("14ow.ogg", "14ow.mp3")
+
+
+$(function(){
+    $('#img').click(function(){
+        $(this).attr('src','14ow.gif');
+    });
+});
+</script>
+</head><body><div class=foo align=center>
+<p>
+<a href="#current" onclick="clicksound.playclip()"><img id = "img" src=14ow.gif width=100%></a>
+<a href=https://www.youtube.com/watch?v=ydmPh4MXT3g&t=24&yt:cc=on>0:24</a>
+</p></div></body></html>
