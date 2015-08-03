@@ -2,9 +2,14 @@
 sync vocals + text + GIF
 
 onclick:
-a) play audio from 0:00
+a) play audio from 0:00 
 b) restart GIF from frame 01
 c) sync vocals with GIF
+
+code stolen from
+a) javascriptkit.com/script/script2/soundlink.shtml
+b) jsfiddle.net/GS427/94/
+c) wow
 
 todo:
 1) front end 12 examples ggif.co
