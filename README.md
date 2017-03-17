@@ -41,3 +41,14 @@ c) codeacademy.reddit.com
 a) bet we sync GIF
 b) try new tools
 c) make people read
+
+## gif.js
+library that reads contents from ggif - actual frames, youtube_id, syllables, timings, audio..
+and makes it playable on canvas element
+synchronises gif frame set with audio, so also it gives methods to control speed, move forward or back, find current time..
+
+## ggif.js
+this library not only can read those gif's, but also receive an input with certain frameset of images, sent them to server and glue new gif, include audio and another metadeta
+
+## omgif.js
+for parsing binary data from gif content, and making new gif binary from given data
