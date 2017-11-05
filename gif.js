@@ -28,7 +28,8 @@ $.extend(Gif.prototype, {
 	load: function(source){
 		var t = this;
 		return new Promise(function(resolve, reject){
-			if(typeof source == 'string' && source.indexOf('http://') === 0)
+			console.log(source);
+			if(typeof source == 'string' && (source.indexOf('http://') === 0 || source.indexOf('https://') === 0))
 				t.image(source, resolve);
 			else
 				t.download(source, resolve);
@@ -118,26 +119,26 @@ $.extend(Gif.prototype, {
 		var extC = g.extensions[0xfe];
 		if(extC && extC.length){
 			var c = extC[0];
-			var bufC = g.buf.subarray(c.start+1, c.start+1 + c.sizes[0]);
+			var bufC = g.buf.slice(c.start+1, c.start+1 + c.sizes[0]);
 			this.comment = ab2str(bufC);
 		}
 
 		var ext = g.extensions[240];
 		if(ext && ext.length){
 			var c = ext[0];
-			this.segments = ab2str(g.buf.subarray(c.start+1, c.start+1 + c.sizes[0]));
+			this.segments = ab2str(g.buf.slice(c.start+1, c.start+1 + c.sizes[0]));
 		}
 
 		var ext = g.extensions[241];
 		if(ext && ext.length){
 			var c = ext[0];
-			this.timings = ab2str(g.buf.subarray(c.start+1, c.start+1 + c.sizes[0]));
+			this.timings = ab2str(g.buf.slice(c.start+1, c.start+1 + c.sizes[0]));
 		}
 
 		var ext = g.extensions[243];
 		if(ext && ext.length){
 			var c = ext[0];
-			this.audioFormat = ab2str(g.buf.subarray(c.start+1, c.start+1 + c.sizes[0]));
+			this.audioFormat = ab2str(g.buf.slice(c.start+1, c.start+1 + c.sizes[0]));
 		}
 		else
 			this.audioFormat = 'ogg';
@@ -146,7 +147,7 @@ $.extend(Gif.prototype, {
 	fade: 0,
 	extractAudio: function(){
 		var t = this;
-		var sound = t.g.buf.subarray(t.g.p);
+		var sound = t.g.buf.slice(t.g.p);
 		if(sound.length){
 			var mime = 'audio/'+(t.audioFormat || 'ogg') + ";base64"
 
