@@ -1,54 +1,29 @@
 # ggif
+ggif talking gif, sync audio w/ gif, share
+1) put audio and plaintext in GIF container
+2) onclick play audio from 0:00, restart GIF from frame1
+3) sync talking GIF
 
-GGIF: audio sync GIF onclick
-1) play audio: javascriptkit.com/script/script2/soundlink.shtml
-2) restart GIF: jsfiddle.net/GS427/94/
-GAME: tap tap sync gGIF, score
-
-TODO:
-
-A) FIX EDGE CASES
-1) find devices/browsers where sync fails eg desktop:safari;ie;edge
-2) alert before device/browser may fail sync
-3) debug (1) reduce (2)
-
-B) ? GGIF DRAG/DROP? // share like GIF but like talkies
-1) embed mp3/code in GIF format?
-2) chrome naptha ocr plugin > ID GIF > fetch xc.cx/id/?
-3) gifv? gfycat? but drag/drop
-
-C) FIX GAME
-3) match pattern: no more compound error
-2) race to perfect sync //try to beat me you can't
-1) FIND PLAYERS
-
-0) BET WE SYNC GIF
-a) partner with players
-b) pool bets / select task
-c) pay bounty hunters
-
-1) SOCIAL CODING
-a) workflow
-b) push push
-c) ggif pix8 tvxt twxt
-
-2) SUMMEROFCODE.CODEACADEMY.COM
-a) 3 courses html;make;interactive 
-b) codepen.io
-c) codeacademy.reddit.com
-
-3) ADULTLITERACY.XPRIZE.ORG
-a) bet we sync GIF
-b) try new tools
-c) make people read
+## vocaltext
+sync vocalization w plaintext
+CAPitalize sylLABles while vocalIZED
 
 ## gif.js
-library that reads contents from ggif - actual frames, youtube_id, syllables, timings, audio..
-and makes it playable on canvas element
-synchronises gif frame set with audio, so also it gives methods to control speed, move forward or back, find current time..
+read gif contents: frames; youtube_id; syllables; timings; audio
+playback via canvas element
+sync gif frames w audio; control speed; go back/forth; find current time < ?
 
 ## ggif.js
-this library not only can read those gif's, but also receive an input with certain frameset of images, sent them to server and glue new gif, include audio and another metadeta
+make ggif from video loop (include audio and metadata)
 
 ## omgif.js
 for parsing binary data from gif content, and making new gif binary from given data
+
+## etc<br>
+![they say GIF can't sync audio](https://i.imgur.com/2teFwEP.png)<br>
+people say no sound w/ gif, they wrong now
+
+![it was all a dream](https://i.imgur.com/LJn2ydF.gif)]<br>
+solution arrived in a dream :)
+
+
