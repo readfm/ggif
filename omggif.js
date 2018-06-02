@@ -359,7 +359,7 @@ function GifReader(buf) {
   if (buf[p++] !== 0x47 ||            buf[p++] !== 0x49 || buf[p++] !== 0x46 ||
       buf[p++] !== 0x38 || (buf[p++]+1 & 0xfd) !== 0x38 || buf[p++] !== 0x61) {
     var error = "Invalid GIF 87a/89a header.";
-    alert(error)
+    //alert(error)
     console.log(error);
     throw error;
   }
@@ -683,7 +683,7 @@ function GifReaderLZWOutputIndexStream(code_stream, p, output, output_length){
   var cur = 0;
 
   var op = 0;  // Output pointer.
-  
+
   var subblock_size = code_stream[p++];
 
   // TODO(deanm): Would using a TypedArray be any faster?  At least it would
@@ -766,7 +766,7 @@ function GifReaderLZWOutputIndexStream(code_stream, p, output, output_length){
     }
 
     var k = chase;
-    
+
     var op_end = op + chase_length + (chase_code !== code ? 1 : 0);
     if (op_end > output_length) {
       console.log("Warning, gif stream longer than expected.");

@@ -28,7 +28,7 @@ $.extend(Gif.prototype, {
 	load: function(source){
 		var t = this;
 		return new Promise(function(resolve, reject){
-			if(typeof source == 'string' && source.indexOf('http://') === 0)
+			if(typeof source == 'string' && (source.indexOf('http://') === 0 || source.indexOf('https://') === 0))
 				t.image(source, resolve);
 			else
 				t.download(source, resolve);
