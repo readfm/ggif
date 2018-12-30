@@ -1,0 +1,28 @@
+{
+  "name": "ggif",
+  "version": "0.1.0",
+  "description": "Create and read ggifs - gif's with audio",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/readfm/ggif.git"
+  },
+  "keywords": [
+    "gif",
+    "canvas",
+    "youtube",
+    "audio"
+  ],
+  "author": "Duke",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/readfm/ggif/issues"
+  },
+  "homepage": "https://github.com/readfm/ggif#readme",
+  "dependencies": {
+    "ytdl-core": "^0.20.4"
+  }
+}

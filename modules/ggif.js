@@ -1,10 +1,156 @@
-// object to glue separate frames into ggif with right timings
-var glueGif = {
+window.Ggif = {
+	// show ggif from source url
+	display: function(src){
+		var $gif = $('#ggif > img[src="'+src+'"]');
+
+		if($gif.length)
+			$gif.show().siblings('img').hide();
+
+		var img = new Image;
+		img.onload = function(){
+			var $img = $(img);
+			if($img.data('_loaded')) return;
+
+			$img.appendTo('#ggif').siblings('img').hide();
+			$img.data('_loaded', true);
+
+			Ggif.audio.src = src;
+		}
+		img.src = src;
+
+		Ggif.loadBuf(src, function(buf){
+			Ggif.read(buf);
+		});
+	},
+
+	// read ggif from arrayBuffer
+	read: function(buf){
+		var g = Ggif.g = new GifReader(buf);
+		Ggif.buf = buf;
+
+
+		Tx.stopPlaying();
+		Tx.youtube.pauseVideo();
+
+		var extC = g.extensions[243], audioFormat;
+
+		if(extC && extC.length){
+			var c = extC[0];
+			audioFormat = ab2str(buf.slice(c.start+1, c.start+1 + c.sizes[0]));
+		}
+
+		var sound = Ggif.getAppendix();
+		if(sound.length){
+			Ggif.sound = sound;
+
+			var mime = 'audio/'+(audioFormat || 'ogg') + ";base64"
+			var blob = new Blob([sound], {type: mime});
+	    	Ggif.audio.src = URL.createObjectURL(blob);
+			//Ggif.audio.src = 'data:audio/ogg;base64,'+Ggif.Uint8ToBase64(sound);
+		}
+
+		var extC = g.extensions[0xfe];
+		if(extC && extC.length){
+			var c = extC[0];
+			var bufC = buf.slice(c.start+1, c.start+1 + c.sizes[0]);
+			$('#gif-comment').val(ab2str(bufC));
+		}
+
+		var ext = g.extensions[240];
+		if(ext && ext.length){
+			var c = ext[0];
+			Ggif.seg = ab2str(buf.slice(c.start+1, c.start+1 + c.sizes[0]));
+			$('#ggame').show();
+		}
+		else
+			$('#ggame').hide();
+
+		var ext = g.extensions[241];
+		if(ext && ext.length){
+			var c = ext[0];
+			Ggif.tim = ab2str(buf.slice(c.start+1, c.start+1 + c.sizes[0]));
+		}
+
+		var ext = g.extensions[242];
+		if(ext && ext.length){
+			var c = ext[0];
+			//$('#gif-youtube').val(ab2str(buf.slice(c.start+1, c.start+1 + c.sizes[0])));
+		}
+
+		if(Ggif.seg && Ggif.tim)
+			Tx.syllabify(Ggif.seg, Ggif.tim);
+
+
+
+		$('#ggame-score').hide()
+		Ggif.tickBuild();
+
+		$('#ggif').trigger('ready');
+		Ggif.play();
+	},
+
+	// give file id and then load ggif
+	prepare: function(id, cb){
+		console.info('Ggif.prepare: '+id);
+		(Sockets.local || Sockets.main).download(id).then(function(buf){
+			//Ggif.image.src = Ggif.objectURL(buf);
+			Ggif.prepareBuf(buf);
+			if(cb) cb();
+		});
+	},
 
 	// from array buffer create objectURL to represent in img=src
 	objectURL: function(arrayBufferView){
 	    var blob = new Blob([arrayBufferView], {type: "image/gif"});
 	    return URL.createObjectURL(blob);
+	},
+
+	// give arrayBuffer and prepare everything to display it
+	prepareBuf: function(buf){
+		Ggif.read(buf);
+		return;
+		$('#gg').show();
+		$('#youtube').hide();
+
+		$(Ggif.image).show().siblings().hide();
+	},
+
+	// load ggif from ipfs by giving hash id
+	fromIpfs: function(id){
+		ipfs.cat(id).then(function(stream){
+			var chunks = [],
+					length = 0;
+
+			stream.on('data', function(chunk){
+				chunks.push(chunk);
+				length += chunk.length;
+				//Ggif.prepareBuf(chunk);
+			});
+
+			stream.on('end', function(ev){
+				var data = new Uint8Array(length),
+						cur = 0;
+
+				for(i = 0; i < chunks.length; i++){
+					data.set(chunks[i], cur);
+					cur += chunks[i].length;
+				}
+
+				Ggif.prepareBuf(data);
+			});
+		});
+	},
+
+	// play audio from ggif
+	play: function(){
+		if(Ggif.audio){
+			//Ggif.audio.pause()
+
+			Ggif.audio.currentTime = 0;
+			Ggif.audio.play();
+		}
+		Ggif.image.src = Ggif.image.src;
+		Tx.play();
 	},
 
 	// play audio from given buffer
@@ -46,7 +192,6 @@ var glueGif = {
 	},
 
 
-	// receive frames from user input
 	upload: function(evt){
 		evt.preventDefault();
 
@@ -100,7 +245,7 @@ var glueGif = {
 
 	},
 
-	// primary format to start conversations from
+
 	audioFormat: Cfg.ggif.audioFormat || 'ogg',
 
 	// make ggif with all the stuff inside it: gif, audio, segments, timings, comment
@@ -295,7 +440,6 @@ var glueGif = {
 		xhr.send();
 	},
 
-	// read timings info from html document
 	parseHtml: function(url){
 		var p = url.replace('http://', '').split('/'),
 			path = 'http://'+p[0]+'/'+p[1]+'/';
@@ -357,6 +501,18 @@ var glueGif = {
 		xhr.onerror = function(e){
 			//alert('Unable to yotube url');
 		};
+		xhr.send();
+	},
+
+	// load text from given url
+	loadText: function(url, cb){
+		var xhr = new XMLHttpRequest();
+		xhr.open("GET", url, true);
+		xhr.responseType = "text";
+
+		xhr.onload = function(e){
+			cb(this.response);
+		}
 		xhr.send();
 	},
 
@@ -480,13 +636,37 @@ var glueGif = {
 
 	radyYT: false,
 
+	//add youtube iframe
+	addYoutube: function(id, cb){
+		$('#ggif > img').hide();
+		$('#ggif-youtube').show();
+		var player = Ggif.youtube = new YT.Player('ggif-youtube', {
+			videoId: id,
+			events: {
+           		onReady: function(){
+           			Ggif.radyYT = true;
+           			Ggif.restart();
+           			if(cb) cb();
+           		}
+           	}
+		});
+
+		$('#gif-youtube_ctrl').css('display', 'inline-block');
+	},
+
 	// return youtube id
 	yid: function(){
 		if(!Ggif.youtube) return;
 		return Ggif.parseURL(Ggif.youtube.getVideoUrl()).id;
 	},
 
-	// print text lines on gif frames and certain time
+	// hide ggif
+	close: function(){
+		$('#gg').hide();
+		if(Ggif.audio)
+			Ggif.audio.pause();
+	},
+
 	print: function(){
 		if(Ggif.printTimeout)
 			clearTimeout(Ggif.printTimeout);
@@ -753,20 +933,25 @@ var glueGif = {
 
 			$('#resize').removeClass('loading-ggif');
 
-			ws.upload(buf, function(file){
-				if(!file) return;
+			console.log(buf);
 
-				Ggif.saveCompiled(file.id);
-			});
+			if(window.ipfs && ipfs.isReady)
+				ipfs.add(Buffer.from(buf)).then(function(r){
+					if(!r || !r.length) return;
+					var id = r[0].path;
+					Ggif.saveCompiled(id);
+					//Ggif.image.src = ipfs.url(id);
+					//Ggif.fromIpfs(id);
+				});
+			else
+				ws.upload(buf, function(file){
+					if(!file) return;
+
+					Ggif.saveCompiled(file.id);
+				});
 
 			return;
-			ipfs.add(Buffer.from(buf)).then(function(r){
-				if(!r || !r.length) return;
-				var id = r[0].path;
-				Ggif.saveCompiled(id);
-				Ggif.image.src = ipfs.url(id);
-				Ggif.fromIpfs(id);
-			});
+
 		});
 	},
 
@@ -938,6 +1123,39 @@ var glueGif = {
 				}
 			});
 		});
+	},
+
+	// preload ggif, extract and play that audio.
+	playAudio: function(img){
+		var id = img.src.split('/').pop();
+
+		if(img.audio){
+			img.src = img.src;
+			img.audio.currentTime = 0;
+			img.audio.play();
+			img.audio.volume = 1;
+		}
+		else
+			ws.download(id).then(function(buf){
+				var ggif = new GifReader(buf);
+				var sound = buf.slice(ggif.p)
+				if(sound.length){
+					var blob = new Blob([sound], {type: "audio/ogg;base64"});
+					img.audio = new Audio;
+			    img.audio.src = URL.createObjectURL(blob);
+					img.src = img.src;
+
+			    	img.audio.addEventListener('ended', function() {
+					    this.currentTime = 0;
+					    if(this.volume <= 0.25) return false;
+					    this.volume = this.volume - 0.25;
+					    this.play();
+					}, false);
+
+					img.audio.currentTime = 0;
+			    	img.audio.play();
+				}
+			});
 	}
 }
 
@@ -957,12 +1175,152 @@ $(function(){
 		Ggif.play();
 	});
 
+	/*
+	var xhr = new XMLHttpRequest();
+	xhr.open("GET", 'sound.txt', true);
+	xhr.onload = function(e){
+		Ggif.audio.src = this.response;
+	}
+	//xhr.send();
+	*/
+
+	//Ggif.audio.src = src || '/sounds/18v.mp3';
+
+	$('#gg').click(function(ev){
+		var g = $(this).data();
+		Ggif.play();
+	});
+
+	$('#gif-includeTwext').mouseup(function(){
+		setTimeout(function(){
+			$('#tickertape')[q.sh($('#gif-includeTwext').hasClass('v'))]();
+		}, 100);
+	});
+
+
+	$('body').keyup(function(e){
+		if(e.keyCode == 27)
+			Ggif.audio.pause();
+		else
+		if(e.keyCode == 32 && !$(':focus').length)
+			$('#ggif').click();
+	});
+
+
+	function cancel(e){
+		if (e.preventDefault) e.preventDefault(); // required by FF + Safari
+		e.dataTransfer.dropEffect = 'copy'; // tells the browser what drop effect is allowed here
+		return false; // required by IE
+	}
+
+	document.body.addEventListener('dragover', cancel);
+	document.body.addEventListener('dragenter', cancel);
+	document.body.addEventListener('drop', function(ev){
+		return;
+		if(ev.dataTransfer.files.length)
+			return Ggif.upload(ev);
+
+		delete Ggif.hash;
+
+		var txt = ev.dataTransfer.getData('Text') || '';
+
+		var isHttp = txt.indexOf('http://') == 0 || txt.indexOf('https://') == 0,
+			isGgif = txt.indexOf('ggif.co')+1 || txt.indexOf('ggif.lh')+1;
+
+		var url = txt.split('#').shift(),
+			ext = url.split('.').pop();
+
+		if(!isHttp)
+			url = 'http://'+url;
+
+		var v = Ggif.parseURL(url);
+
+		if(v && v.provider == 'youtube' && v.id){
+			Ggif.addYoutube(v.id);
+		}
+		else
+		if(ext == 'gif'){
+			var img = new Image();
+
+			img.onerror = function(){
+				console.error('Unable to load image: '+img.src);
+			};
+
+			img.onload = function(){
+				Ggif.prepare(img.src);
+			};
+			img.src = url;
+
+			delete Ggif.hash;
+		}
+		else
+		if(isGgif){
+			Ggif.parseHtml(url);
+		}
+		else
+		if(!isNaN(parseFloat(txt))){
+			Ggif.tim = txt;
+			Ggif.tickBuild();
+		}
+		else
+		if(txt){
+			Ggif.seg = txt;
+			Ggif.tickBuild();
+		}
+
+		ev.preventDefault();
+		return false
+	}, false);
 
 	$('#upload-gif').bind('change', Ggif.upload);
 	$('#gif-upload').click(function(){
 		$('#upload-gif').click();
 	});
 
+
+	setInterval(function(){
+		if(Ggif.radyYT && $(Ggif.youtube.c).is(':visible')){
+			var time = Ggif.youtube.getCurrentTime();
+
+			var startTime = parseFloat(document.getElementById('gif-youtube_start').value),
+				lengthTime = parseFloat(document.getElementById('gif-youtube_length').value);
+
+			if(startTime && lengthTime && time > (startTime+lengthTime)){
+				//C.log(time +' > '+ (startTime+lengthTime));
+				Tx.play();
+			}
+		}
+	}, 200);
+
+	$('#gif-watson').click(function(){
+		if(!Ggif.youtube || $(Ggif.youtube.c).is(':hidden')) return;
+
+		var yid = Ggif.parseURL(Ggif.youtube.getVideoUrl()).id;
+		var startTime = document.getElementById('gif-youtube_start').value || 0,
+			lengthTime = document.getElementById('gif-youtube_length').value;
+
+		var req = {
+		   cmd: 's2t.fromYoutube',
+		   yid: yid
+		};
+
+		if(startTime) req.startTime = startTime;
+		if(lengthTime) req.duration = lengthTime;
+
+		ws.send(req, function(r){
+			if(!r.file) return $('#gif-watson').blink('red');
+			$('#gif-watson').blink('orange');
+
+			ws.send({
+				cmd: 's2t.transcribe',
+				fid: r.file.id,
+			}, function(m){
+				if(m.watson)
+					Ggame.compileWatson(m.watson);
+			});
+
+		});
+	});
 
 	/*
 	Ggif.load('/sounds/18v.mp3', function(buf){

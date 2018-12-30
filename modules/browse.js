@@ -1,0 +1,3 @@
+class Browse{
+  constructor(){}
+}

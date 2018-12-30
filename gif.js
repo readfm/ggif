@@ -1,3 +1,4 @@
+// gif player class, to play, pause, read frames, extract audio
 window.Gif = function(source, cb){
 	var t = this;
 	//var id = img.src.split('/').pop();
@@ -17,6 +18,7 @@ window.Gif = function(source, cb){
 };
 
 $.extend(Gif.prototype, {
+	// create canvas area where ggif gets played
 	create: function(){
 		this.canvas = document.createElement('canvas');
 		this.$canvas = $(this.canvas);
@@ -25,6 +27,7 @@ $.extend(Gif.prototype, {
 		this.$canvas.addClass('gif');
 	},
 
+	// preload gif file and indentify from where to do so
 	load: function(source){
 		var t = this;
 		return new Promise(function(resolve, reject){
@@ -35,6 +38,7 @@ $.extend(Gif.prototype, {
 		});
 	},
 
+	// download ggif image from same server
 	image: function(src, cb){
 		var t = this;
 
@@ -64,7 +68,12 @@ $.extend(Gif.prototype, {
 		this.canvas.height = this.g.height;
 	},
 
+
+	// the speed of how fast frames and audi goes
 	speed: 1,
+
+
+	// play it from certain time
 	play: function(from){
 		var t = this;
 		var time = 0;
@@ -91,12 +100,14 @@ $.extend(Gif.prototype, {
 		}
 	},
 
+	// extract certain frame
 	frame: function(i){
 		var pixels = this.ctx.getImageData(0,0, this.g.width, this.g.height);
 	    this.g.decodeAndBlitFrameBGRA(i, pixels.data);
 	    this.ctx.putImageData(pixels, 0, 0);
 	},
 
+	// stop playing in current time
 	pause: function(){
 		this.audio.pause();
 		this.clearTimeouts();
@@ -112,6 +123,7 @@ $.extend(Gif.prototype, {
 
 	frames: [],
 
+	// extract timings, youtube info, syllables and audio
 	extract: function(){
 		var g = this.g;
 
@@ -144,6 +156,8 @@ $.extend(Gif.prototype, {
 	},
 
 	fade: 0,
+
+	// make audio playable within audio tag.
 	extractAudio: function(){
 		var t = this;
 		var sound = t.g.buf.subarray(t.g.p);

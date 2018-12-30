@@ -1,3 +1,5 @@
+
+// prints texts on each ggif frame
 var textFrames = {
 	monoW: {
 		8: 5,
@@ -345,6 +347,7 @@ var textFrames = {
 		});
 	},
 
+	// make any url youtube or vimeo to be parsed into its default form
 	parseURL: function(url){
 		if(!url) return {};
 

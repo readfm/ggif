@@ -1,0 +1,120 @@
+.tip{
+	position: absolute;
+	background-color: rgba(10,10,10,0.7);
+	padding: 8px;
+	display: none;
+	min-width: 50px;
+	z-index: 120;
+	font-size: 14px;
+	border-radius: 3px;
+	color: white;
+	display: none;
+
+	margin-top: 6px;
+	min-width: initial;
+}
+
+.tip.white{
+    background-color: rgb(247, 247, 247);
+	
+}
+
+.tip > .option{
+	text-align: left;
+	font-weight: bold;
+	cursor: pointer;
+	padding: 5px 9px 4px;
+	font-size: 12px;
+	min-height: 23px;
+	color: white;
+	display: block;
+	background-position: 4px center;
+	background-size: 16px;
+}
+
+.tip > .option.active {
+	background-color: rgba(151, 151, 151, 0.6);
+}
+
+.tip > p{
+	font-size: 13px;
+}
+
+.tip > .choose{
+	background-image: url('checkXwhite.png');
+	background-size: 12px;
+	background-position: 3px 7px;
+}
+
+.tip > .choose.v{
+	background-image: url('checkVwhite.png');
+}
+
+.tip > .option.choose{
+	padding-left: 20px;
+}
+
+.tip .check{
+	width: 16px;
+	height: 16px;
+	margin: 2px 5px 5px 5px;
+	background-color: #B3B3B3;
+}
+
+.tip button, .tip .button{
+	background-color: transparent;
+	margin: 1px;
+}
+
+.tip > .option:hover, .tip button:hover, .tip .button:hover{
+	background-color: rgba(41, 41, 41, 0.5);
+	/* box-shadow: 0 0 8px #111 inset; */
+}
+
+.tip > .option.inline{
+	display: inline-block;
+	padding-left: 20px !important;
+	background: transparent;
+}
+
+
+input.fcs{
+	border-color: rgb(182, 182, 182);
+	background-color: #FBFBFB;
+}
+
+.tip.options{
+	width: 330px;
+	background-color: #FBFBFB;
+	color: #999;
+	border: 1px solid #C8C8C8;
+	box-shadow: 0 0 10px rgb(200, 200, 200);
+	max-height: 200px;
+	overflow-y: auto;
+}
+
+.tip > input{
+	background-color: rgba(163, 163, 163, 0.51);
+	border: 1px solid grey;
+	width: auto;
+	color: white;
+	height: 26px;
+}
+
+.tip.options > div{
+	text-align: left;
+	cursor: pointer;
+	padding: 10px 15px;
+	font-size: 13px;
+	white-space: nowrap;
+	overflow: hidden;
+	text-overflow: ellipsis;
+}
+
+.tip.options >  div:first-letter {
+    text-transform: uppercase;
+}
+
+.tip.options > div:hover{
+	background-color: rgba(208, 208, 208, 0.2);
+}
