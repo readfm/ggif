@@ -1,31 +1,38 @@
-window.Gif = function(source, cb){
-	var t = this;
-	//var id = img.src.split('/').pop();
+class Gif{
+	constructor(){
+		var t = this;
+		//var id = img.src.split('/').pop();
 
-	this.create();
-	this.load(source).then(function(){
-		t.resize();
+		this.speed = 1;
+		this.timeouts = [];
+		this.frames = [];
+		this.fade = 0;
 
-		t.frame(0);
+		this.create();
+		this.load(source).then(function(){
+			t.resize();
 
-		t.extract();
+			t.frame(0);
 
-		t.extractAudio();
+			t.extract();
 
-		if(cb) cb()
-	});
-};
+			t.extractAudio();
 
-$.extend(Gif.prototype, {
-	create: function(){
+			if(cb) cb()
+		});
+	}
+
+	// initiate all elements to get it displayed
+	create(){
 		this.canvas = document.createElement('canvas');
 		this.$canvas = $(this.canvas);
 		this.canvas.gif = this;
 		this.ctx = this.canvas.getContext('2d');
 		this.$canvas.addClass('gif');
-	},
+	}
 
-	load: function(source){
+	// load from source and decide how
+	load(source){
 		var t = this;
 		return new Promise(function(resolve, reject){
 			if(typeof source == 'string' && (source.indexOf('http://') === 0 || source.indexOf('https://') === 0))
@@ -33,9 +40,10 @@ $.extend(Gif.prototype, {
 			else
 				t.download(source, resolve);
 		});
-	},
+	}
 
-	image: function(src, cb){
+	// if its an image url, load it using ajax
+	image(src, cb){
 		var t = this;
 
 		var xhr = new XMLHttpRequest();
@@ -47,9 +55,10 @@ $.extend(Gif.prototype, {
 			cb(t.g);
 		};
 		xhr.send();
-	},
+	}
 
-	download: function(id, cb){
+	// if its stored from same system, use socket to get it by id
+	download(id, cb){
 		Pix.download(id, function(file){
 			var buf = file.data;
 			if(!buf) return reject();
@@ -57,15 +66,16 @@ $.extend(Gif.prototype, {
 			var g = t.g = new GifReader(buf);
 			cb(g);
 		});
-	},
+	}
 
-	resize: function(){
+	// set actual size of player according to the size of gif image
+	resize(){
 		this.canvas.width = this.g.width;
 		this.canvas.height = this.g.height;
-	},
+	}
 
-	speed: 1,
-	play: function(from){
+	// play it from certain time
+	play(from){
 		var t = this;
 		var time = 0;
 		if(!from) from = 0;
@@ -89,30 +99,31 @@ $.extend(Gif.prototype, {
     		t.audio.currentTime = from/10;
 			t.audio.play();
 		}
-	},
+	}
 
-	frame: function(i){
+	// show selected frame
+	frame(i){
 		var pixels = this.ctx.getImageData(0,0, this.g.width, this.g.height);
 	    this.g.decodeAndBlitFrameBGRA(i, pixels.data);
 	    this.ctx.putImageData(pixels, 0, 0);
 	},
 
-	pause: function(){
+	// pause that audio
+	pause(){
 		this.audio.pause();
 		this.clearTimeouts();
-	},
+	}
 
-	timeouts: [],
-	clearTimeouts: function(){
+	// clear next iteration to stop chabging frames
+	clearTimeouts(){
 		this.timeouts.forEach(function(to){
 			clearTimeout(to);
 		});
 		this.timeouts = [];
-	},
+	}
 
-	frames: [],
-
-	extract: function(){
+	// extract particular ggif infomration, like timings, syllables and audio
+	extract(){
 		var g = this.g;
 
 		var extC = g.extensions[0xfe];
@@ -141,10 +152,10 @@ $.extend(Gif.prototype, {
 		}
 		else
 			this.audioFormat = 'ogg';
-	},
+	}
 
-	fade: 0,
-	extractAudio: function(){
+	// from the end of the file take audio away
+	extractAudio(){
 		var t = this;
 		var sound = t.g.buf.subarray(t.g.p);
 		if(sound.length){
@@ -160,21 +171,18 @@ $.extend(Gif.prototype, {
 			    this.currentTime = 0;
 			    if(this.volume <= 0.07) return false;
 
-					console.log(this.volume);
 					if(t.fade === true)
 						this.volume = this.volume/2;
 					else
 						this.volume -= t.fade;
-
-					console.log(this.volume);
 
 					t.play(0);
 			}, false);
 		}
 
 		return sound;
-	},
-});
+	}
+};
 
 /*
 $(function(){
