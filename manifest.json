@@ -1,6 +1,6 @@
 {
   "name" : "ggif",
-  "version" : "1.0.1",
+  "version" : "1.0.5",
   "description" : "Play ggif audio",
   "background" : { "scripts": ["background.js"] },
   "permissions" : [
