@@ -2,60 +2,129 @@
 <html lang="en-US">
 <head>
 	<meta charset="UTF-8">
-	<meta name = "viewport" content = "user-scalable=no, initial-scale=1.0, maximum-scale=1.0, width=device-width">
-	<title>Ggif compiler</title>
+	<meta name="viewport" content = "user-scalable=no, initial-scale=1.0, maximum-scale=1.0, width=device-width">
+	<title>Youtube &amp; Watson</title>
+	
+	<link rel="manifest" href="./manifest.json">
+	<meta name="theme-color" content="#2F3BA2" />
 
-	<script src="./libs/underscore.js"></script>
-	<script src="./libs/jquery-2.js"></script>
+	<script>
+		if ('serviceWorker' in navigator) {
+		  window.addEventListener('load', () => {
+		  	console.log('Page loaded sw');
+		    navigator.serviceWorker.register('./service-worker.js')
+		        .then((reg) => console.log('Service worker registered.', reg));
+		  });
+		}
+	</script>
+	<script src="./install.js"></script>
 
-	<script src="./libs/jquery.event.drag.js"></script>
-	<script src="./libs/jquery.event.drop.js"></script>
-	<script src="./libs/cookie.jquery.js"></script>
-	<script src="./libs/js.cookie.js"></script>
-	<script src="./libs/functions.js"></script>
-	<script src="./libs/omggif.js"></script>
-	<script src="./libs/gif.js"></script>
-	<script src="./libs/md5.js"></script>
-	<script src="./libs/download.js"></script>
-	<script src="./libs/binary.js"></script>
-	<script src="./libs/Elem.js"></script>
-	<script src="./libs/Link-ws.js"></script>
-	<script src="./libs/elasticlunr.js"></script>
+	<script src="//libs.io.cx/underscore.js"></script>
+	<script src="//libs.io.cx/jquery.js"></script>
+	<script>
+		window.isElectron = window.process && process && process.versions['electron'];
+		if(window.isElectron)
+			window.$ = window.jQuery = require('./lib/jquery.js');
+	</script>
+	<script src="//libs.io.cx/jquery.event.drag.js"></script>
+	<script src="//libs.io.cx/jquery.event.drop.js"></script>
+	<script src="//libs.io.cx/cookie.jquery.js"></script>
+	<script src="//libs.io.cx/js.cookie.js"></script>
+	<script src="//libs.io.cx/functions.js"></script>
+	<script src="//libs.io.cx/omggif.js"></script>
+	<script src="./lib/gif.js"></script>
+	<script src="./lib/download.js"></script>
+	<script src="./lib/binary.js"></script>
+	<script src="//libs.io.cx/Elem.js"></script>
+	<script
+		src="https://unpkg.com/ipfs-api@9.0.0/dist/index.js"
+		integrity="sha384-5bXRcW9kyxxnSMbOoHzraqa7Z0PQWIao+cgeg327zit1hz5LZCEbIMx/LWKPReuB"
+		crossorigin="anonymous"
+	></script>
+	<script type='text/javascript' src='https://cdn.firebase.com/v0/firebase.js'></script>
+	<script src="./lib/utils.js" type="text/javascript"></script>
+	<script src="./lib/refs.js" type="text/javascript"></script>
+	<script src="./lib/classy.js" type="text/javascript"></script>
+	<script src="./lib/firebaseHandler.js" type="text/javascript"></script>
+	<script src="./lib/Hyphenator.js" type="text/javascript"></script>
+  <script src="./lib/en-us.js" type="text/javascript"></script>
+  <script src="./lib/syllabifier.js" type="text/javascript"></script>
+
+	<script src="//libs.io.cx/ws.js"></script>
 
 	<link rel="stylesheet" href="./design/interface.css">
 	<link rel="stylesheet" href="./design/layout.css">
+	<link rel="stylesheet" href="./design/progress.css">
 	<link rel="stylesheet" href="./design/game.css">
 
+	<script src="./gif.js"></script>
+
+
 	<script src="./config.js"></script>
-
-	<script src="./modules/me.js"></script>
-
-	<script src="./modules/ws.js"></script>
-
-	<script src="./modules/link-ws.js"></script>
-
-	<script src="./modules/browse.js"></script>
-	<script src="./modules/central.js"></script>
 
 	<script src="./modules/core.js"></script>
 	<script src="./modules/catalog.js"></script>
 	<script src="./modules/site.js"></script>
 	<script src="./modules/interface.js"></script>
 
+	<script src="./modules/watson.js"></script>
+
+	<script src="./modules/data.js"></script>
+	<script src="./modules/ipfs.js"></script>
 	<script src="./modules/layout.js"></script>
 	<script src="./modules/wysiwyg.js"></script>
+	<script src="./modules/ggif.js"></script>
+	<script src="./modules/ggame.js"></script>
+	<script src="./modules/tx.js"></script>
+	<script src="./modules/textdata.js"></script>
+	<script src="./modules/impose.js"></script>
+	<script src="https://www.youtube.com/iframe_api"></script>
+
+	<script src="./modules/ipfs.js"></script>
 
 	<script src="./modules/builder.js"></script>
 
-	<script src="./index.js"></script>
+	<script src="./pix8/carousel.js"></script>
+	<link  href="./pix8/carousel.css" rel="stylesheet">
+	<script src="./pix8/pix.js"></script>
+	<link href="./pix8/GG.css" rel="stylesheet">
+	<script src="./pix8/GG.js"></script>
+	<script src="./pix8/run.js"></script>
+	<script src="./pix8/pix8list.js"></script>
+	<script src="./pix8/context.js"></script>
+	<script src="./pix8/acc.js"></script>
 </head>
 <body>
 	<div id="modal"></div>
 
 	<div id='cover'></div>
 
-	<video id='video' controls="">
-	</video>
+	<canvas id='ggif-frame' width='1' height='1'></canvas>
+
+
+	<div id='gif-youtube_ctrl' class='h field'>
+		<i class="fa fa-youtube-play" style='color: #cc181e'></i>
+		<input id='gif-youtube_start' type='number' placeholder='Start'/>
+		<i class="fa fa-i-cursor"></i>
+		<input id='gif-youtube_length' type='number' placeholder='End'/>
+		<button id='gif-watson' class="fa fa-soundcloud" title='Save audio and send to watson'></button>
+	</div>
+
+	<button id='pix8-toggle'></button>
+
+	<button id='auth-open'></button>
+
+	<style id='home-styleSize'></style>
+
+
+	<div id='view' class='bar'>
+		<div id='youtube'></div>
+		<img id='gg'/>
+	</div>
+
+	<div id='frames' class='bar carousel'>
+
+	</div>
 
 	<div id='control'>
 		<button id='play'></button>
@@ -67,5 +136,21 @@
 		<div id='resize'></div>
 		<div id='voice'></div>
 	</div>
-	</body>
+
+
+	<div class='bar' id='textdata'>
+		<div id='textdata-resize'></div>
+		<textarea id='textdata-area'></textarea>
+		<div id='textdata-links'></div>
+	</div>
+
+	<div id='progress' class="pie-wrapper progress-90">
+		<div id="progress-label">00%</div>
+		<div id="progress-tasks">~0</div>
+		<div class="pie">
+			<div class="left-side half-circle"></div>
+			<div class="right-side half-circle"></div>
+		</div>
+	</div>
+</body>
 </html>

@@ -1,21 +1,44 @@
 {
-  "name" : "ggif",
-  "version" : "1.0.5",
-  "description" : "Play ggif audio",
-  "background" : { "scripts": ["background.js"] },
-  "permissions" : [
-    "contextMenus",
-    "tabs",
-    "activeTab",
-    "webNavigation",
-    "http://*/*",
-    "https://*/*"
-   ],
-  "minimum_chrome_version" : "6.0.0.0",
-  "icons" : {
-    "16" : "imageinfo-16.png",
-    "48" : "imageinfo-48.png",
-    "128" : "imageinfo-128.png"
-  },
-  "manifest_version": 2
+	"name": "Ggif manager",
+	"short_name": "Ggif",
+	"description": "Ggif & pix8 - better, pictures, faster",
+	"permissions": [
+		"bookmarks", "topSites", "tabCapture", "storage",
+		"chrome://favicon/"
+	],
+	"icons": [{
+      "src": "/design/logo48.png",
+      "sizes": "48x48",
+      "type": "image/png"
+    },{
+      "src": "/design/logo512.png",
+      "sizes": "512x512",
+      "type": "image/png"
+    }],
+	"manifest_version": 2,
+	"commands": {
+		"toggle": {
+			"description": "Toggle tree",
+			"suggested_key": {
+				"default": "Alt+C"
+			}
+		}
+	},
+	"browser_action": {
+		"default_icon": "/img/logo48.png"
+	},
+	"chrome_url_overrides": {
+		"newtab": "tab.html"
+	},
+
+	"start_url": "./index.html",
+	"display": "standalone",
+	"background_color": "#3E4EB8",
+	"theme_color": "#2F3BA2",
+
+	"content_security_policy": "script-src 'self' 'unsafe-eval' https://www.googletagmanager.com https://ssl.google-analytics.com https://www.google-analytics.com; object-src 'self'",
+
+	"csp": "script-src 'self' 'unsafe-inline'; object-src 'self'",
+	"update_url": "https://clients2.google.com/service/update2/crx",
+	"version": "0.4.2"
 }
